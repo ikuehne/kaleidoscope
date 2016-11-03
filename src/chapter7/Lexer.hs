@@ -16,18 +16,16 @@ import Text.Parsec.Language (emptyDef)
 import Text.Parsec.Prim (many)
 
 import qualified Text.Parsec.Token as Tok
-import qualified Text.Parsec.Char  as C
 
 lexer :: Tok.TokenParser ()
 lexer = Tok.makeTokenParser style
   where
     ops = ["+","*","-","/",";","=",",","<",">","|",":"]
-    names = ["extern","if","then","else","in","for"
+    names = ["def","extern","if","then","else","in","for"
             ,"binary", "unary", "var"
             ]
     style = emptyDef {
                Tok.commentLine = "#"
-             , Tok.identStart = C.lower
              , Tok.reservedOpNames = ops
              , Tok.reservedNames = names
              }
@@ -41,13 +39,6 @@ identifier = Tok.identifier lexer
 whitespace = Tok.whiteSpace lexer
 reserved   = Tok.reserved lexer
 reservedOp = Tok.reservedOp lexer
-lexeme     = Tok.lexeme lexer
-
-typeName :: Parser String
-typeName = lexeme $ do
-  firstLetter <- C.upper
-  rest        <- many $ Tok.identLetter emptyDef
-  return $ firstLetter:rest
 
 operator :: Parser String
 operator = do

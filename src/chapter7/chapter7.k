@@ -9,12 +9,6 @@ def fib(x)
   else
     fib(x-1)+fib(x-2);
 
-def fact(x)
-  if (x < 1) then
-    1
-  else
-    x * fact(x - 1);
-
 # Iterative fib.
 def fibi(x)
   var a = 1, b = 1, c = 0 in
@@ -24,4 +18,5 @@ def fibi(x)
     b = c) :
   b;
 
-fact(10);
+# Call it. 
+fibi(10);

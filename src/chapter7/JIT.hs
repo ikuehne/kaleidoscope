@@ -11,6 +11,8 @@
 
 module JIT where
 
+import Data.Int
+import Data.Word
 import Foreign.Ptr ( FunPtr, castFunPtr )
 
 import Control.Monad.Except
@@ -44,7 +46,7 @@ passes :: PassSetSpec
 passes = defaultCuratedPassSetSpec { optLevel = Just 3 }
 
 runJIT :: AST.Module -> IO (Either String AST.Module)
-runJIT mod =
+runJIT mod = do
   withContext $ \context ->
     jit context $ \executionEngine ->
       runExceptT $ withModuleFromAST context mod $ \m ->
