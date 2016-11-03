@@ -30,7 +30,7 @@ floating = Float <$> float
 binop = Ex.Infix (BinaryOp <$> op) Ex.AssocLeft
 unop = Ex.Prefix (UnaryOp <$> op)
 
-binary s assoc = Ex.Infix (reservedOp s >> return (BinaryOp s)) assoc
+binary s = Ex.Infix (reservedOp s >> return (BinaryOp s))
 
 op :: Parser String
 op = do
@@ -39,12 +39,12 @@ op = do
   whitespace
   return o
 
-binops = [[binary "=" Ex.AssocLeft]
-        ,[binary "*" Ex.AssocLeft,
-          binary "/" Ex.AssocLeft]
-        ,[binary "+" Ex.AssocLeft,
-          binary "-" Ex.AssocLeft]
-        ,[binary "<" Ex.AssocLeft]]
+binops = [ [ binary "=" Ex.AssocLeft ]
+         , [ binary "*" Ex.AssocLeft
+           , binary "/" Ex.AssocLeft ]
+         , [ binary "+" Ex.AssocLeft
+           , binary "-" Ex.AssocLeft ]
+         , [ binary "<" Ex.AssocLeft ] ]
 
 expr :: Parser Expr
 expr =  Ex.buildExpressionParser (binops ++ [[unop], [binop]]) factor
@@ -54,9 +54,9 @@ variable = Var <$> identifier
 
 function :: Parser Expr
 function = do
-  reserved "def"
+  typeName
   name <- identifier
-  args <- parens $ many identifier
+  args <- parens $ commaSep (typeName >> identifier)
   body <- expr
   return $ Function name args body
 
@@ -99,7 +99,7 @@ for = do
 
 letins :: Parser Expr
 letins = do
-  reserved "var"
+  typeName
   defs <- commaSep $ do
     var <- identifier
     reservedOp "="
@@ -159,7 +159,7 @@ toplevel = many $ do
     return def
 
 parseExpr :: String -> Either ParseError Expr
-parseExpr s = parse (contents expr) "<stdin>" s
+parseExpr = parse (contents expr) "<stdin>"
 
 parseToplevel :: String -> Either ParseError [Expr]
-parseToplevel s = parse (contents toplevel) "<stdin>" s
+parseToplevel = parse (contents toplevel) "<stdin>"

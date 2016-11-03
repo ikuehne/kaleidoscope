@@ -11,7 +11,8 @@
 
 module Syntax where
 
-type Name = String
+type DType = String
+type Name  = String
 
 data Expr
   = Int Integer
